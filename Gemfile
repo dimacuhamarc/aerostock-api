@@ -51,3 +51,5 @@ gem 'jsonapi-serializer'
 
 gem 'cancancan'
 gem 'rolify'
+
+gem 'faker'
