@@ -3,8 +3,7 @@
 class AerostockDeviseMailerPreview < ActionMailer::Preview
   def welcome_email
     user = User.first
-    token = "fake_token"
-    AerostockDeviseMailer.welcome_email(user, token)
+    AerostockDeviseMailer.welcome_email(user)
   end
 
   def reset_password_instructions

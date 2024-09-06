@@ -47,6 +47,8 @@ group :development do
   gem 'rspec-rails', '~> 7.0.0'
 end
 
+gem 'premailer-rails'
+
 gem 'devise'
 gem 'devise-jwt'
 gem 'jsonapi-serializer'

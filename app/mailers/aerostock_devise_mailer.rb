@@ -30,9 +30,10 @@ class AerostockDeviseMailer < Devise::Mailer
     )
   end
 
-  def welcome_email(record, token, opts = {})
-    @first_name = record.first_name
-    subject = "Hello #{@first_name}! Welcome to Aerostock."
+  def welcome_email(record, opts = {})
+    user = record
+    @first_name = user.first_name
+    subject = "Hi #{@first_name}! Welcome to Aerostock App."
 
     mail(
       to: record.email, 
