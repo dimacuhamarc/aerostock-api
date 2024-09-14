@@ -9,6 +9,26 @@
 #   end
 
 
-for i in 1..10
-  User.create(first_name: Faker::Internet.name, last_name: "#{SecureRandom.random_number(1_00)}",email: Faker::Internet.email, password: 'password', password_confirmation: 'password')
+# for i in 1..10
+#   User.create(first_name: Faker::Internet.name, last_name: "#{SecureRandom.random_number(1_00)}",email: Faker::Internet.email, password: 'password', password_confirmation: 'password')
+# end
+
+
+for i in 1..5
+  Item.create(
+    name: Faker::Commerce.product_name,
+    description: Faker::Lorem.sentences(number: 1),
+    product_number: Faker::Barcode.ean,
+    serial_number: Faker::Barcode.ean,
+    quantity: SecureRandom.random_number(1_00),
+    uom: Faker::Commerce.promotion_code(),
+    date_manufactured: Faker::Date.between(from: 5.years.ago, to: Date.today),
+    date_expired: Faker::Date.between(from: Date.today, to: 5.years.from_now),
+    location: Faker::Address.full_address,
+    remarks: Faker::Lorem.sentences(number: 1),
+    date_arrival_to_warehouse: Faker::Date.between(from: 1.months.ago, to: Date.today),
+    authorized_inspection_personnel: Faker::Name.name
+  )
 end
+
+puts "Seeding done!"
