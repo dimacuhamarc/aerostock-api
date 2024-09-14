@@ -19,7 +19,6 @@ class User < ApplicationRecord
   validates :email, :first_name, :last_name, presence: true
   validates :employee_id, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
-  validates :must_have_single_role
 
   private 
 

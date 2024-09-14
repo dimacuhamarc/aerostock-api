@@ -8,4 +8,10 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
+
+  scope :v1 do
+    resources :items, controller: 'items'
+    resources :item_search, controller: 'item_search', only: [:index]
+  end
+
 end
