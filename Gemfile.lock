@@ -165,6 +165,9 @@ GEM
     nokogiri (1.16.7-x86_64-linux)
       racc (~> 1.4)
     orm_adapter (0.5.0)
+    paper_trail (15.2.0)
+      activerecord (>= 6.1)
+      request_store (~> 1.4)
     pg (1.5.7)
     premailer (1.27.0)
       addressable
@@ -222,6 +225,8 @@ GEM
       psych (>= 4.0.0)
     reline (0.5.9)
       io-console (~> 0.5)
+    request_store (1.7.0)
+      rack (>= 1.4)
     responders (3.1.1)
       actionpack (>= 5.2)
       railties (>= 5.2)
@@ -277,6 +282,7 @@ DEPENDENCIES
   devise-jwt
   faker
   jsonapi-serializer
+  paper_trail
   pg (~> 1.1)
   premailer-rails
   puma (>= 5.0)
