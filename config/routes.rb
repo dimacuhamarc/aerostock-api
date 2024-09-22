@@ -10,8 +10,10 @@ Rails.application.routes.draw do
   }
 
   scope :v1 do
-    resources :items, controller: 'items'
-    resources :item_search, controller: 'item_search', only: [:index]
+    ## /v1/items
+    namespace :items do
+      resources :search, only: [:index]
+    end
+    resources :items
   end
-
 end
