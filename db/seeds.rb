@@ -12,9 +12,15 @@
 # for i in 1..10
 #   User.create(first_name: Faker::Internet.name, last_name: "#{SecureRandom.random_number(1_00)}",email: Faker::Internet.email, password: 'password', password_confirmation: 'password')
 # end
+# 
 
+puts "Creating system user..."
 
-for i in 1..5
+User.create(first_name: 'System', last_name: 'Aerostock', email: 'system@aerostock.app', password: 'password', password_confirmation: 'password')
+
+puts "Creating items..."
+
+for i in 1..10
   Item.create(
     name: Faker::Commerce.product_name,
     description: Faker::Lorem.sentences(number: 1),

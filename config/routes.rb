@@ -10,11 +10,14 @@ Rails.application.routes.draw do
   }
 
   scope :v1 do
-    ## /v1/items/search?query=...
-    namespace :items do
-      resources :search, only: [:index]
-    end
     ## /v1/items
-    resources :items, controller: 'items', only: [:index, :show]
+    resources :items, controller: 'items' do
+      collection do
+        get :search
+      end
+      member do
+        get :audit_log
+      end
+    end    
   end
 end
