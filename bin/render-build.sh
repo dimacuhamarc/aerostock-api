@@ -11,4 +11,4 @@ bundle install
 # Uncomment the following line:
 
 bundle exec rails db:migrate
-bundle exec rails db:seed
+# bundle exec rails db:seed
