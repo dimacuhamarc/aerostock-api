@@ -5,17 +5,18 @@ class Users::SessionsController < Devise::SessionsController
   respond_to :json
 
   def create
-    super do |resource|
-      if resource.errors.empty?
-        send_otp(resource) # Call the method with the user resource
-        render json: { message: 'OTP sent successfully', user: resource.first_name }, status: :ok
-        return # Ensure we exit after handling the response
-      else
-        render json: { error: resource.errors.full_messages }, status: :unauthorized
-        return # Exit after rendering the error response
-      end
+    user = User.find_by(email: params[:user][:email])
+  
+    if user && user.valid_password?(params[:user][:password])
+      # User is authenticated
+      Rails.logger.debug "Logged in user: #{user.email}" # Log the email of the logged-in user
+      send_otp(user) # Send OTP to the authenticated user
+      render json: { message: 'OTP sent successfully', user: user.email }, status: :ok
+    else
+      render json: { error: 'Invalid email or password' }, status: :unauthorized
     end
   end
+  
 
   def verify_otp
     user = User.find_by(id: params[:user_id])
@@ -67,6 +68,7 @@ class Users::SessionsController < Devise::SessionsController
   
 
   def send_otp(user)
+    Rails.logger.debug "Sending OTP to: #{user.email}" # Log the email being used
     # Generate a 6-digit OTP
     otp = SecureRandom.random_number(10**6).to_s.rjust(6, '0')
   
@@ -75,8 +77,6 @@ class Users::SessionsController < Devise::SessionsController
   
     # Send the OTP to the user's email
     OtpMailer.send_otp(user, otp).deliver_now
-  
-    # You might not want to render anything here if called from create
   end
   
 

@@ -10,12 +10,10 @@ class User < ApplicationRecord
 
   before_create :process_before_validation
 
+  before_validation :process_before_validation
+
   after_create_commit :send_welcome_email
 
-  # Validations
-  
-  # validates :first_name, presence: true
-  # validates :last_name, presence: true
   validates :email, :first_name, :last_name, presence: true
   validates :employee_id, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
@@ -27,9 +25,11 @@ class User < ApplicationRecord
   private 
 
   def pre_fill_employee_id # AER_12414, EMPLOYEE_ID IS STRING
-    loop do
-      self.employee_id ||= "AER_#{SecureRandom.random_number(1_000)}"
-      break unless User.exists?(employee_id: self.employee_id)
+    if self.employee_id.blank?
+      loop do
+        self.employee_id ||= "AER_#{SecureRandom.random_number(1_000)}"
+        break unless User.exists?(employee_id: self.employee_id)
+      end
     end
   end
 
