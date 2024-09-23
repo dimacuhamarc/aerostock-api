@@ -19,7 +19,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
 
   def generate_jwt_token
-    JWT.encode({ user_id: self.id, exp: 24.hours.from_now.to_i }, Rails.application.credentials.devise_jwt_secret_key!)
+    JWT.encode({ user_id: self.id, exp: 24.hours.from_now.to_i }, Rails.application.secrets.devise_jwt_secret_key)
   end
   
   private 
