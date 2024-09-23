@@ -13,7 +13,7 @@ class Ability
       # elsif user.has_role? :employee
       #   can :manage, :all
       elsif user.has_role? :guest
-        can :read, :all
+        can :manage, :all
       end
     end
 
