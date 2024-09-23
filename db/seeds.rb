@@ -16,7 +16,7 @@
 
 puts "Creating system user..."
 
-User.create(first_name: 'System', last_name: 'Aerostock', email: 'system@aerostock.app', password: 'password', password_confirmation: 'password')
+User.create(first_name: 'System', last_name: 'Aerostock', email: 'system@aerostock.app', password: 'password', password_confirmation: 'password', employee_id: 'AER_001')
 
 puts "Creating items..."
 
