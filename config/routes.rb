@@ -8,6 +8,11 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
+  
+  devise_scope :user do
+    post 'users/verify_otp', to: 'users/sessions#verify_otp'
+    get 'users/send_otp', to: 'users/sessions#send_otp'
+  end
 
   scope :v1 do
     ## /v1/items

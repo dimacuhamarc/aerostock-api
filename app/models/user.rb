@@ -8,9 +8,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :jwt_authenticatable, jwt_revocation_strategy: self
 
-  before_validation :process_before_validation
+  before_create :process_before_validation
 
-  after_commit :send_welcome_email
+  after_create_commit :send_welcome_email
 
   # Validations
   
@@ -19,6 +19,10 @@ class User < ApplicationRecord
   validates :email, :first_name, :last_name, presence: true
   validates :employee_id, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
+
+  def generate_jwt_token
+    JWT.encode({ user_id: self.id, exp: 24.hours.from_now.to_i }, Rails.application.secrets.secret_key_base)
+  end
 
   private 
 
@@ -45,4 +49,6 @@ class User < ApplicationRecord
     pre_fill_employee_id
     pre_assign_role
   end
+
+  
 end
