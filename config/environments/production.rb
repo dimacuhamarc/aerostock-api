@@ -2,7 +2,10 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  secret Rails.application.credentials.jwt_secret
+  config.jwt do
+    issuer 'aerostock-api'
+    secret Rails.application.credentials.jwt_secret
+  end
   # Code is not reloaded between requests.
   config.enable_reloading = false
   # Eager load code on boot. This eager loads most of Rails and
