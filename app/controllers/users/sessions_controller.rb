@@ -4,6 +4,36 @@ class Users::SessionsController < Devise::SessionsController
   include RackSessionsFix
   respond_to :json
 
+  def create
+    super do |resource|
+      if resource.errors.empty?
+        send_otp(resource) # Call the method with the user resource
+        render json: { message: 'OTP sent successfully', user: resource.first_name }, status: :ok
+        return # Ensure we exit after handling the response
+      else
+        render json: { error: resource.errors.full_messages }, status: :unauthorized
+        return # Exit after rendering the error response
+      end
+    end
+  end
+
+  def verify_otp
+    user = User.find_by(id: params[:user_id])
+
+    if user && user.otp == params[:otp] && user.otp_sent_at > 10.minutes.ago
+      # Clear OTP after successful verification
+      user.update(otp: nil, otp_sent_at: nil)
+
+      # Generate JWT token
+      token = user.generate_jwt_token
+
+      # Respond with JWT token
+      render json: { token: "Bearer #{token}", message: 'OTP verified successfully' }, status: :ok
+    else
+      render json: { error: 'Invalid or expired OTP' }, status: :unauthorized
+    end
+  end
+  
   private
 
   def respond_with(current_user, _opts = {})
@@ -34,22 +64,21 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
-  # before_action :configure_sign_in_params, only: [:create]
+  
 
-  # GET /resource/sign_in
-  # def new
-  #   super
-  # end
-
-  # POST /resource/sign_in
-  # def create
-  #   super
-  # end
-
-  # DELETE /resource/sign_out
-  # def destroy
-  #   super
-  # end
+  def send_otp(user)
+    # Generate a 6-digit OTP
+    otp = SecureRandom.random_number(10**6).to_s.rjust(6, '0')
+  
+    # Store the OTP and the time it was sent in the database
+    user.update(otp: otp, otp_sent_at: Time.current)
+  
+    # Send the OTP to the user's email
+    OtpMailer.send_otp(user, otp).deliver_now
+  
+    # You might not want to render anything here if called from create
+  end
+  
 
   # protected
 
