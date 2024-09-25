@@ -49,6 +49,4 @@ class User < ApplicationRecord
     pre_fill_employee_id
     pre_assign_role
   end
-
-  
 end
