@@ -4,6 +4,10 @@ class Users::SessionsController < Devise::SessionsController
   include RackSessionsFix
   respond_to :json
 
+  def options
+    head :ok
+  end
+
   def create
     user = User.find_by(email: params[:user][:email])
 
@@ -34,7 +38,7 @@ class Users::SessionsController < Devise::SessionsController
         token = user.generate_jwt_token
   
         # Respond with JWT token
-        render json: { token: "Bearer #{token}", message: 'OTP verified and logged in successfully' }, status: :ok
+        render json: { token: "Bearer #{token}", message: 'OTP verified and logged in successfully', first_name: user.first_name, last_name: user.last_name, employee_id: user.employee_id}, status: :ok
       else
         render json: { error: 'Invalid or expired OTP' }, status: :unauthorized
       end
@@ -79,5 +83,13 @@ class Users::SessionsController < Devise::SessionsController
     user.update(otp: otp, otp_sent_at: Time.current)
   
     OtpMailer.send_otp(user, otp).deliver_now
+  end
+
+  def resend_otp(user)
+    Rails.logger.debug "Resending OTP to: #{user.email}" # Log the email being used
+  
+    OtpMailer.send_otp(user, user.otp).deliver_now
+
+    render json: { message: 'OTP resent successfully', user: user.email, uid: user.id}, status: :ok
   end
 end
