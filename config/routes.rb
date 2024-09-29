@@ -16,9 +16,11 @@ Rails.application.routes.draw do
 
   scope :v1 do
     ## /v1/items
+    get 'items/total_items', controller: 'items', action: 'total_items'
     resources :items, controller: 'items' do
       collection do
         get :search
+        get :audit_logs
       end
       member do
         get :audit_log

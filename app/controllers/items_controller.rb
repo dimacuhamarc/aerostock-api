@@ -1,12 +1,27 @@
 class ItemsController < ApplicationController
   before_action :set_paper_trail_whodunnit
   before_action :authenticate_user!
+
   def index
-    @items = Item.all
-    if @items
-      render json: @items
+    if params[:top] == 'true'
+      @items = Item.order(quantity: :desc).page(params[:page]).per(params[:items].to_i || 10)
+    elsif params[:new_items] == 'true'
+      @items = Item.order(created_at: :desc).page(params[:page]).per(params[:items].to_i || 10)
     else
-      render json: {error: 'No items found'}, status: :not_found
+      @items = Item.page(params[:page]).per(params[:items].to_i || 10)
+    end
+    
+    if @items.present?
+      render json: {
+        items: @items,
+        meta: {
+          current_page: @items.current_page,
+          total_pages: @items.total_pages,
+          total_count: @items.total_count
+        }
+      }
+    else
+      render json: { error: 'No items found' }, status: :not_found
     end
   end
 
@@ -63,6 +78,30 @@ class ItemsController < ApplicationController
     }
   end
 
+  def audit_logs
+    @items = Item.all
+    @versions = PaperTrail::Version.all
+    @audit_logs = []
+    @items.each do |item|
+      @audit_logs << {
+        item: item,
+        audit_log: item.versions.map { |version| 
+          {
+            id: version.id,
+            event: version.event, # "create", "update", or "destroy"
+            changes: version.changeset, # Details of what was changed
+            modified_at: version.created_at,
+            # if user is not found, it means the audit log was created by the system
+            modified_by: version.whodunnit ? User.find(version.whodunnit).first_name : 'System',
+            created_at: item.created_at,
+          }
+        }
+      }
+    end
+
+    render json: @audit_logs
+  end
+
   def search
     @items = Item.where('name LIKE ?', "%#{params[:query]}%")
     if @items
@@ -70,6 +109,11 @@ class ItemsController < ApplicationController
     else
       render json: {error: 'No items found'}, status: :not_found
     end
+  end
+
+  def total_items
+    @total_items = Item.all.count
+    render json: @total_items
   end
 
   private 

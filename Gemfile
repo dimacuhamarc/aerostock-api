@@ -58,3 +58,5 @@ gem 'rolify'
 
 gem 'faker'
 gem 'paper_trail'
+
+gem 'kaminari'
