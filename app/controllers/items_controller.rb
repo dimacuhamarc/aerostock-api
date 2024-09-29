@@ -65,15 +65,20 @@ class ItemsController < ApplicationController
     @item = Item.find(params[:id])
     @versions = @item.versions
 
-    render json: @versions.map { |version| 
-      {
-        id: version.id,
-        event: version.event, # "create", "update", or "destroy"
-        changes: version.changeset, # Details of what was changed
-        modified_at: version.created_at,
-        # if user is not found, it means the audit log was created by the system
-        modified_by: version.whodunnit ? User.find(version.whodunnit).first_name : 'System',
-        created_at: @item.created_at,
+    render json: {
+      item: @item,
+      audit_log: @versions.reverse.map { |version|
+      changes = version.changeset || {}
+      changes = "Item created" if version.event == "create"
+        {
+          id: version.id,
+          event: version.event, # "create", "update", or "destroy"
+          changes: changes, # Details of what was changed
+          modified_at: version.created_at,
+          # if user is not found, it means the audit log was created by the system
+          modified_by: version.whodunnit ? User.find(version.whodunnit).first_name : 'System',
+          created_at: @item.created_at,
+        }
       }
     }
   end
@@ -86,10 +91,12 @@ class ItemsController < ApplicationController
       @audit_logs << {
         item: item,
         audit_log: item.versions.map { |version| 
+        changes = version.changeset || {}
+        changes = "Item created" if version.event == "create"
           {
             id: version.id,
             event: version.event, # "create", "update", or "destroy"
-            changes: version.changeset, # Details of what was changed
+            changes: changes, # Details of what was changed
             modified_at: version.created_at,
             # if user is not found, it means the audit log was created by the system
             modified_by: version.whodunnit ? User.find(version.whodunnit).first_name : 'System',

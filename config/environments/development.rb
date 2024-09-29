@@ -72,6 +72,7 @@ Rails.application.configure do
 }
 config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
 
+PaperTrail.config.enabled = true
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
