@@ -36,6 +36,7 @@ class ItemsController < ApplicationController
 
   def create
     @item = Item.new(item_params)
+    PaperTrail.request.whodunnit = current_user.id
     if @item.save
       render json: @item, status: :created
     else
@@ -45,6 +46,7 @@ class ItemsController < ApplicationController
 
   def update
     @item = Item.find(params[:id])
+    PaperTrail.request.whodunnit = current_user.id
     if @item.update(item_params)
       render json: @item
     else
@@ -54,6 +56,7 @@ class ItemsController < ApplicationController
 
   def destroy
     @item = Item.find(params[:id])
+    PaperTrail.request.whodunnit = current_user.id
     if @item.destroy
       render json: {message: 'Item deleted successfully'}, status: :ok
     else
@@ -73,7 +76,7 @@ class ItemsController < ApplicationController
         {
           id: version.id,
           event: version.event, # "create", "update", or "destroy"
-          changes: changes, # Details of what was changed
+          changes: version.changeset, # Details of what was changed
           modified_at: version.created_at,
           # if user is not found, it means the audit log was created by the system
           modified_by: version.whodunnit ? User.find(version.whodunnit).first_name : 'System',
